@@ -1,0 +1,31 @@
+import mysql.connector as mysql 
+import pandas as pd 
+import numpy as np 
+from pandas import Series, DataFrame
+import requests
+import sqlite3
+import pyodbc
+
+conn= mysql.connect(user='admin',password='honda308',host='localhost', database='scratch')
+cursor=conn.cursor()
+
+cursor.execute('Describe scratch.stocks')
+print(cursor.fetchall())
+
+url="https://api-v2.intrinio.com/companies/AAPL?api_key=OjFiMGM3NjYzMDVjYzE5YTM1OWU3NmQzZDI0YjE2NmIw"
+response=requests.get(url)
+jobj=response.json()
+ticker= jobj['ticker']
+name=jobj['name']
+info=jobj['short_description']
+#print('stock_name', name , "ticker", ticker, 'description',info)
+
+cursor=conn.cursor()
+cursor.execute=("Insert INTO SCRATCH.STOCKS VALUES(%s,%s)",(ticker,name))
+cursor.execute=("commit")
+#cursor.execute=("Select stock_ticker from scratch.stocks")
+#cursor.execute(sql_cmd,(ticker,name,info))
+#cursor.execute(sql_cmd1)
+#data=cursor.fetchall()
+print(cursor.fetchone())
+#print(data)
