@@ -1,31 +1,33 @@
-import mysql.connector as mysql 
-import pandas as pd 
-import numpy as np 
-from pandas import Series, DataFrame
+import mysql.connector
+from mysql.connector import Error
 import requests
 import sqlite3
 import pyodbc
+import _mysql_connector
 
-conn= mysql.connect(user='admin',password='honda308',host='localhost', database='scratch')
-cursor=conn.cursor()
-
-cursor.execute('Describe scratch.stocks')
-print(cursor.fetchall())
-
-url="https://api-v2.intrinio.com/companies/AAPL?api_key=OjFiMGM3NjYzMDVjYzE5YTM1OWU3NmQzZDI0YjE2NmIw"
+url="https://api-v2.intrinio.com/companies/NKE?api_key=OjFiMGM3NjYzMDVjYzE5YTM1OWU3NmQzZDI0YjE2NmIw"
 response=requests.get(url)
 jobj=response.json()
 ticker= jobj['ticker']
 name=jobj['name']
 info=jobj['short_description']
-#print('stock_name', name , "ticker", ticker, 'description',info)
+print('stock_name', name , "ticker", ticker, 'description',info)
 
-cursor=conn.cursor()
-cursor.execute=("Insert INTO SCRATCH.STOCKS VALUES(%s,%s)",(ticker,name))
-cursor.execute=("commit")
-#cursor.execute=("Select stock_ticker from scratch.stocks")
-#cursor.execute(sql_cmd,(ticker,name,info))
-#cursor.execute(sql_cmd1)
-#data=cursor.fetchall()
-print(cursor.fetchone())
-#print(data)
+
+try:
+    conn= mysql.connector.connect(user='admin',password='Honda308',host='localhost', database='scratch')
+    cursor=conn.cursor()
+    mySql_insert_query = """Insert INTO SCRATCH.STOCKS(Stock_ticker, Stock_Name) VALUES(%s,%s) """
+    recordTuple = (ticker, name)
+    cursor.execute(mySql_insert_query, recordTuple)
+    conn.commit()
+    print("Record inserted successfully")
+
+except mysql.connector.Error as error:
+    print("Failed to insert into MySQL table {}".format(error))
+
+finally:
+    if (conn.is_connected()):
+        cursor.close()
+        conn.close()
+        print("MySQL connection is closed")
