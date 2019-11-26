@@ -1,0 +1,5 @@
+create table stocks (
+  Stock_ticker varchar(128) not null unique primary key,
+  Stock_name Varchar(128),
+  Information Varchar(128),
+  );
